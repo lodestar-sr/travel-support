@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import React, { FC, useState } from 'react'
 import TextField from '@mui/material/TextField'
 import Autocomplete from '@mui/material/Autocomplete'
 import CircularProgress from '@mui/material/CircularProgress'
@@ -38,8 +38,6 @@ interface Props {
   onChange?: any
   value?: any
   fetchData: any
-  options: any
-  setOptions: any
   onInputChange?: any
 }
 
@@ -54,27 +52,36 @@ export const AsyncComboBox: FC<Props> = React.forwardRef(
       onChange,
       value,
       fetchData,
-      options,
-      setOptions,
       onInputChange,
     },
     ref
   ) => {
     const [open, setOpen] = React.useState(false)
     const [loading, setLoading] = React.useState(false)
+    const [options, setOptions] = useState([])
 
     React.useEffect(() => {
-      fetchData()
-    }, [])
+      if (open) {
+        handleFetchData()
+      }
+    }, [open])
 
     React.useEffect(() => {
       if (error) setOpen(false)
     }, [error])
 
+    const handleFetchData = async () => {
+      setLoading(true)
+      const data = await fetchData()
+      setOptions(data || [])
+      setLoading(false)
+    }
+
     const debounceSearch = debounce(async (keyword) => {
       setOptions([])
       setLoading(true)
-      await fetchData(keyword)
+      const data = await fetchData(keyword)
+      setOptions(data || [])
       setLoading(false)
     }, 500)
 
@@ -100,7 +107,7 @@ export const AsyncComboBox: FC<Props> = React.forwardRef(
               getOptionLabel={(option) => option.name}
               options={options}
               loading={loading}
-              clearIcon={<img src={ClearIcon} alt="Clear icon" />}
+              clearIcon={!loading && <img src={ClearIcon} alt="Clear icon" />}
               renderInput={(params) => (
                 <TextField
                   {...params}

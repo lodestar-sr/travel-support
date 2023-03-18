@@ -49,27 +49,22 @@ const Form: FC<Props> = ({
     setError,
   }: any = useContext(homeContext)
 
-  const [options, setOptions] = useState([])
-  const [destinationFieldIndexs, setDestinationFieldIndexs] = useState<any>([])
+  const [destinationFieldIndex, setDestinationFieldIndex] = useState<any>([])
 
   const fetchCities = async (keyword: string = '') => {
     try {
       const res: any = await getCities(keyword)
-      setOptions(res)
+      return res
     } catch (error) {
-      destinationFieldIndexs.forEach((item: number) => {
-        setError(`citiesOfDestination[${item}]`, {
-          type: 'custom',
-          message: String(error),
-        })
+      setError(`citiesOfDestination[${destinationFieldIndex}]`, {
+        type: 'custom',
+        message: String(error),
       })
     }
   }
 
   const onInputDestinationChange = (index: number) => {
-    if (destinationFieldIndexs.includes(index)) return
-
-    setDestinationFieldIndexs([...destinationFieldIndexs, index])
+    setDestinationFieldIndex(index)
   }
 
   return (
@@ -141,8 +136,6 @@ const Form: FC<Props> = ({
                     helperText={errors.cityOfOrigin?.message || ''}
                     onChange={onCityOriginChange}
                     value={watchCityOfOrigin}
-                    options={options}
-                    setOptions={setOptions}
                     fetchData={fetchCities}
                   />
                 </Grid>
@@ -254,8 +247,6 @@ const Form: FC<Props> = ({
                           }
                           onChange={onCitiesDestinationChange}
                           fetchData={fetchCities}
-                          options={options}
-                          setOptions={setOptions}
                           onInputChange={() => onInputDestinationChange(index)}
                         />
                       </Box>
