@@ -27,6 +27,9 @@ const StyledAutocomplete = styled(Autocomplete)(({ theme }) => ({
     margin: '4px 0 0',
     fontSize: 14,
   },
+  '& .MuiAutocomplete-clearIndicator': {
+    padding: 8,
+  },
 })) as typeof Autocomplete
 
 interface Props {
@@ -35,7 +38,7 @@ interface Props {
   helperText: string
   control: any
   name: string
-  onChange?: any
+  onChange?: (data?: any) => void
   value?: any
   fetchData: any
   onInputChange?: any
@@ -130,8 +133,9 @@ export const AsyncComboBox: FC<Props> = React.forwardRef(
                 field.onChange(data)
                 onChange && onChange(data)
               }}
-              onInputChange={(e, value) => {
-                debounceSearch(value)
+              onInputChange={(e, value, reason) => {
+                if (reason === 'input' && value.length > 0)
+                  debounceSearch(value)
                 onInputChange && onInputChange(value)
               }}
             />

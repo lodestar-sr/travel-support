@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom'
 import { useQueryParams } from '../../hooks/useQueryParams'
 import { useCustomSearchParams } from '../../hooks/useCustomSearchParams'
 import { queryObjSerialize } from '../../utils'
+import { City, FormValues } from '../../interface'
 
 interface Props {}
 
@@ -56,7 +57,8 @@ const Home: FC<Props> = (props) => {
     setValue,
     setError,
     handleSubmit,
-  } = useForm({
+    trigger,
+  } = useForm<FormValues>({
     mode: 'all',
     defaultValues: {
       cityOfOrigin: { name: '' },
@@ -103,7 +105,7 @@ const Home: FC<Props> = (props) => {
     if (citiesOfDestination)
       setValue(
         'citiesOfDestination',
-        citiesOfDestination.split(',').map((item: any) => ({ name: item }))
+        citiesOfDestination.split(',').map((item: string) => ({ name: item }))
       )
   }
 
@@ -123,7 +125,7 @@ const Home: FC<Props> = (props) => {
     )
   }
 
-  const isValidNumber = (value: any) => Number.isInteger(value)
+  const isValidNumber = (value: string | number) => Number.isInteger(value)
 
   const handleSetQueryParams = (key: string, value: any) => {
     setQueryParams({
@@ -139,6 +141,7 @@ const Home: FC<Props> = (props) => {
 
     setValue('passengers', Number(watchPassengers) - 1)
     handleSetQueryParams('passengers', Number(watchPassengers) - 1)
+    trigger('passengers')
   }
 
   const onIncreasePassengers = () => {
@@ -146,34 +149,39 @@ const Home: FC<Props> = (props) => {
 
     setValue('passengers', Number(watchPassengers) + 1)
     handleSetQueryParams('passengers', Number(watchPassengers) + 1)
+    trigger('passengers')
   }
 
-  const onPassengersChange = (e: any) => {
-    const value = e.target.value
+  const onPassengersChange = (e: React.SyntheticEvent) => {
+    const value = (e.target as HTMLInputElement).value
 
     if (!isValidNumber(Number(value))) return
 
     handleSetQueryParams('passengers', Number(value))
+    trigger('passengers')
   }
 
-  const onCityOriginChange = (data: any) => {
+  const onCityOriginChange = (data: City) => {
     if (data) handleSetQueryParams('cityOfOrigin', data.name)
+    trigger('cityOfOrigin')
   }
 
-  const onCitiesDestinationChange = (data: any) => {
+  const onCitiesDestinationChange = (data: City) => {
     if (data)
       handleSetQueryParams(
         'citiesOfDestination',
         watchCitiesOfDestination?.map((item) => item.name)
       )
+    trigger('citiesOfDestination')
   }
 
-  const onDateChange = (value: any) => {
+  const onDateChange = (value: string) => {
     const date = dayjs(value).format('MM/DD/YYYY')
     handleSetQueryParams('date', date)
+    trigger('date')
   }
 
-  const onSubmit = (data: any) => {
+  const onSubmit = () => {
     navigate(`/result?${queryObjSerialize(searchAsObject)}`)
   }
 

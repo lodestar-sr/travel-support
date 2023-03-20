@@ -15,17 +15,19 @@ import { Grid, Box, Button, IconButton, Typography } from '@mui/material'
 
 import { AsyncComboBox, DatePicker, NumberInput } from '../../../components'
 import { homeContext } from '..'
+import { Control } from 'react-hook-form'
+import { FormValues } from '../../../interface'
 
 interface Props {
-  control: any
+  control: Control<FormValues>
   errors: any
   fields: any
-  onRemoveDestination: any
-  onAddDestionation: any
+  onRemoveDestination: (index: number) => void
+  onAddDestionation: () => void
   onSubmit: () => void
   isValid: boolean
-  onDecreasePassengers: any
-  onIncreasePassengers: any
+  onDecreasePassengers: () => void
+  onIncreasePassengers: () => void
 }
 
 const Form: FC<Props> = ({
@@ -72,8 +74,14 @@ const Form: FC<Props> = ({
       component="form"
       sx={{
         backgroundColor: 'white',
-        padding: '62px 86px 38px',
-        width: '38%',
+        padding: {
+          md: '62px 86px 38px',
+          xs: '21px 14px',
+        },
+        width: {
+          md: '38%',
+          xs: '100%',
+        },
         borderRadius: '16px',
         display: 'flex',
         flexDirection: 'column',
@@ -127,7 +135,7 @@ const Form: FC<Props> = ({
                 justifyContent="space-between"
                 alignItems="center"
               >
-                <Grid item xs={7} md={7}>
+                <Grid item xs={12} md={7} lg={7}>
                   <AsyncComboBox
                     control={control}
                     name="cityOfOrigin"
@@ -139,9 +147,19 @@ const Form: FC<Props> = ({
                     fetchData={fetchCities}
                   />
                 </Grid>
-                <Grid item xs={4} md={4}>
-                  <Grid container sx={{ ml: 5 }}>
-                    <Grid item md={7}>
+                <Grid
+                  item
+                  md={5}
+                  sx={{
+                    display: {
+                      xs: 'none',
+                      md: 'block',
+                      lg: 'block',
+                    },
+                  }}
+                >
+                  <Grid container sx={{ ml: 10 }} justifyContent="flex-start">
+                    <Grid item md={6}>
                       <NumberInput
                         control={control}
                         name="passengers"
@@ -229,7 +247,7 @@ const Form: FC<Props> = ({
                   justifyContent="space-between"
                   alignItems="center"
                 >
-                  <Grid item xs={7} md={7}>
+                  <Grid item xs={12} md={7} lg={7}>
                     <Box
                       display="flex"
                       alignItems="flex-end"
@@ -271,8 +289,22 @@ const Form: FC<Props> = ({
                     </Box>
                   </Grid>
                   {index === 0 && (
-                    <Grid item xs={4} md={4}>
-                      <Grid container sx={{ ml: 5 }}>
+                    <Grid
+                      item
+                      md={5}
+                      sx={{
+                        display: {
+                          xs: 'none',
+                          md: 'block',
+                          lg: 'block',
+                        },
+                      }}
+                    >
+                      <Grid
+                        container
+                        sx={{ ml: 10 }}
+                        justifyContent="flex-start"
+                      >
                         <Grid item xs={7}>
                           <DatePicker
                             control={control}
@@ -332,6 +364,59 @@ const Form: FC<Props> = ({
           </TimelineContent>
         </TimelineItem>
       </Timeline>
+      <Box display={{ xs: 'block', md: 'none' }}>
+        <Timeline position="right">
+          <TimelineItem
+            sx={{
+              position: 'relative',
+              ':before': {
+                display: 'none',
+              },
+            }}
+          >
+            <TimelineSeparator>
+              <TimelineDot
+                variant="outlined"
+                sx={{
+                  borderColor: 'secondary.dark',
+                  borderWidth: '1px',
+                  padding: '6px',
+                  visibility: 'hidden',
+                }}
+              />
+            </TimelineSeparator>
+            <TimelineContent sx={{ position: 'relative', paddingLeft: '48px' }}>
+              <Grid container columnSpacing={3}>
+                <Grid item xs={6}>
+                  <DatePicker
+                    control={control}
+                    error={!!errors.date}
+                    helperText={errors.date?.message || ''}
+                    name="date"
+                    label="Date"
+                    onChange={(date: any) => onDateChange(date)}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <NumberInput
+                    control={control}
+                    name="passengers"
+                    label="Passengers"
+                    error={!!errors.passengers}
+                    helperText=""
+                    onDecrease={onDecreasePassengers}
+                    onIncrease={onIncreasePassengers}
+                    onChange={onPassengersChange}
+                  />
+                  <Typography color="error">
+                    {errors.passengers?.message || ''}
+                  </Typography>
+                </Grid>
+              </Grid>
+            </TimelineContent>
+          </TimelineItem>
+        </Timeline>
+      </Box>
       <Button
         variant="contained"
         sx={{
@@ -342,6 +427,10 @@ const Form: FC<Props> = ({
           alignSelf: 'center',
           '&:hover': {
             backgroundColor: 'secondary.dark',
+          },
+          width: {
+            xs: '100%',
+            md: 'unset',
           },
         }}
         disabled={!isValid}

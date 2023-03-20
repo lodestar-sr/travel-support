@@ -7,6 +7,13 @@ export interface QueryParams {
 
 export interface City {
   name: string
-  long: number
-  lat: number
+  long?: number
+  lat?: number
+}
+
+export interface FormValues {
+  cityOfOrigin: City
+  passengers: number | string
+  date: string | null
+  citiesOfDestination: City[]
 }

@@ -47,13 +47,18 @@ const Result: FC<Props> = () => {
     borderColor: 'primary.dark',
     position: 'absolute',
     top: '50%',
-    left: '25%',
     transform: 'translate(40%, 0)',
     borderRadius: '4px',
     minWidth: '10%',
     minHeight: '20%',
     color: 'primary.dark',
     textAlign: 'center',
+    left: {
+      md: '20%',
+      xl: '25%',
+      sm: '25%',
+      xs: 0,
+    },
   }
 
   const connectorTimelineStyle = {
@@ -79,8 +84,14 @@ const Result: FC<Props> = () => {
     <Box
       sx={{
         backgroundColor: 'white',
-        padding: '62px 86px 38px',
-        width: '38%',
+        padding: {
+          md: '62px 86px 38px',
+          xs: '21px 14px',
+        },
+        width: {
+          md: '38%',
+          xs: '100%',
+        },
         borderRadius: '16px',
         display: 'flex',
         flexDirection: 'column',
@@ -104,7 +115,8 @@ const Result: FC<Props> = () => {
             <Box sx={distanceBoxStyle}>
               {result[
                 `${searchAsObject?.cityOfOrigin}-${citiesOfDestionation[0]}`
-              ]?.toFixed(2)}
+              ]?.toFixed(2) || 0}{' '}
+              km
             </Box>
           </TimelineContent>
         </TimelineItem>
@@ -147,7 +159,8 @@ const Result: FC<Props> = () => {
                     `${citiesOfDestionation[index]}-${
                       citiesOfDestionation[index + 1]
                     }`
-                  ]?.toFixed(2)}
+                  ]?.toFixed(2) || 0}{' '}
+                  km
                 </Box>
               )}
             </TimelineContent>
@@ -156,7 +169,7 @@ const Result: FC<Props> = () => {
       </Timeline>
       <Box display="flex" flexDirection="column" alignItems="center">
         <Typography sx={{ color: 'primary.dark', fontWeight: 700 }}>
-          {result?.totalDistance?.toFixed(2)}
+          {result?.totalDistance?.toFixed(2) + ' km'}
           <Typography component="span" sx={{ color: 'secondary.dark' }}>
             {' is total distance'}
           </Typography>
@@ -185,6 +198,10 @@ const Result: FC<Props> = () => {
             backgroundColor: 'secondary.dark',
           },
           marginTop: '36px',
+          width: {
+            md: 'unset',
+            xs: '100%',
+          },
         }}
         onClick={() => navigate(-1)}
       >
